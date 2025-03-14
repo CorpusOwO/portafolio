@@ -1,0 +1,104 @@
+---
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+const navItems: NavItem[] = [
+  {
+    label: "Inicio",
+    href: "#home",
+  },
+  {
+    label: "Experiencias",
+    href: "#experience",
+  },
+  {
+    label: "Proyectos",
+    href: "#projects",
+  },
+  {
+    label: "Contacto",
+    href: "#contact",
+  },
+];
+---
+
+<div class="flex justify-center w-full">
+  <nav
+    class="fixed flex left-0 right-0 z-[100] bg-[#1414149c] border border-1 border-[var(--white-icon-tr)] backdrop-blur-xl transition-all md:top-0 md:bottom-auto bottom-0 md:w-[33rem] rounded-t-2xl md:rounded-full md:mt-6 md:justify-self-center"
+  >
+    <div class="container mx-auto flex justify-center items-center p-3">
+      <ul
+        class="flex w-full justify-between md:space-x-6 md:justify-center md:gap-12 gap-6"
+      >
+        {
+          navItems.map((item) => (
+            <li class="flex-1 md:flex-none">
+              <a
+                href={item.href}
+                class="flex flex-col items-center gap-1 text-[var(--white-icon)] transition-colors text-xs md:text-base"
+              >
+                <span class="hidden md:inline-block">{item.label}</span>
+                <span class="md:hidden">{item.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </nav>
+</div>
+
+<script>
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener("click", function (e) {
+      e.preventDefault();
+      const target = e.currentTarget as HTMLAnchorElement;
+      const targetId = target.getAttribute("href")?.substring(1) || "";
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({
+          behavior: "smooth",
+        });
+      }
+    });
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const sections = document.querySelectorAll("section[id]");
+    const navLinks = document.querySelectorAll("nav a[href^='#']");
+    const observerOptions = { threshold: 0.6 };
+
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          navLinks.forEach((link) => link.classList.remove("active"));
+          const id = entry.target.getAttribute("id");
+          const activeLink = document.querySelector(`nav a[href="#${id}"]`);
+          if (activeLink) {
+            activeLink.classList.add("active");
+          }
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      observerCallback,
+      observerOptions
+    );
+    sections.forEach((section) => observer.observe(section));
+  });
+</script>
+
+<style>
+  @media (max-width: 767px) {
+    body {
+      padding-bottom: 70px;
+    }
+  }
+
+  nav a.active {
+    color: white !important;
+  }
+</style>
